@@ -40,11 +40,11 @@ const CONFIG = {
     visit:   ['your.work@pandarg.com'],       // ← Add your work email or team email
   },
 
-  // API proxy endpoint — your Netlify or Vercel function URL
-  // Local dev: Vite will proxy /api → localhost (configure in vite.config.js if needed)
-  // Production: replace with your deployed function URL
-  // Example: 'https://your-app.netlify.app/.netlify/functions/generate'
-  apiEndpoint: '/api/generate',
+  // API proxy endpoint — your Vercel function URL
+  // TODO: After deploying to Vercel, replace this with your actual Vercel URL:
+  // Production: 'https://create-reports.vercel.app/api/generate'
+  // For now, using relative path for local dev
+  apiEndpoint: 'https://create-reports.vercel.app/api/generate',
 
   // EmailJS credentials — from your .env file
   emailjs: {
