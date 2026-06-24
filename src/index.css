@@ -1,0 +1,58 @@
+/* ============================================================
+   Store Reports — Global Styles
+   ============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  /* Brand */
+  --red:        #D0201A;
+  --red-light:  #f5e6e6;
+  --red-dark:   #a8100b;
+
+  /* Neutrals */
+  --bg:         #F7F7F8;
+  --surface:    #FFFFFF;
+  --border:     #E4E4E7;
+  --muted:      #71717A;
+  --text:       #18181B;
+
+  /* Status */
+  --amber:      #F59E0B;
+  --amber-bg:   #FFFBEB;
+  --green:      #16A34A;
+  --green-bg:   #F0FDF4;
+
+  /* Typography */
+  --font-sans:  'Inter', system-ui, sans-serif;
+  --font-mono:  'DM Mono', 'Courier New', monospace;
+
+  /* Sizing */
+  --radius:     8px;
+  --panel-w:    420px;
+}
+
+html, body, #root {
+  height: 100%;
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* Focus */
+:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 2px;
+}
