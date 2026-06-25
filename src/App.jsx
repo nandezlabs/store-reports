@@ -1051,28 +1051,6 @@ export default function App() {
           <span style={{ fontSize: 12, color: 'var(--muted)', marginLeft: 2 }}>#{CONFIG.storeNumber}</span>
         </div>
 
-        {/* Report type switcher */}
-        <nav style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
-          {[
-            { type: 'daily',  label: 'Daily',  Icon: Icon.Daily  },
-            { type: 'weekly', label: 'Weekly', Icon: Icon.Weekly },
-            { type: 'visit',  label: 'Visit',  Icon: Icon.Visit  },
-          ].map(({ type, label, Icon: Ic }) => (
-            <button
-              key={type}
-              onClick={() => switchType(type)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '5px 12px', border: 'none', borderRadius: 6, cursor: 'pointer',
-                fontSize: 13, fontWeight: 500, transition: 'all .15s',
-                background: reportType === type ? 'var(--red)'  : 'transparent',
-                color:      reportType === type ? '#fff'        : 'var(--muted)',
-              }}
-            >
-              <Ic /> <span className="nav-label">{label}</span>
-            </button>
-          ))}
-        </nav>
       </header>
 
       {/* ── Body ── */}
@@ -1083,7 +1061,6 @@ export default function App() {
           @media (max-width: 768px) {
             .desktop-panel { display: none !important; }
             .mobile-tabs   { display: flex !important; }
-            .nav-label     { display: none; }
           }
           @media (min-width: 769px) {
             .mobile-tabs   { display: none !important; }
@@ -1119,6 +1096,31 @@ export default function App() {
         }}
           className={mobileTab === 'form' ? 'mobile-active-form' : 'desktop-panel'}
         >
+          {/* Report type switcher */}
+          <div style={{ padding: '12px 20px', borderBottom: '1px solid var(--border)' }}>
+            <nav style={{ display: 'flex', gap: 4 }}>
+              {[
+                { type: 'daily',  label: 'Daily',  Icon: Icon.Daily  },
+                { type: 'weekly', label: 'Weekly', Icon: Icon.Weekly },
+                { type: 'visit',  label: 'Visit',  Icon: Icon.Visit  },
+              ].map(({ type, label, Icon: Ic }) => (
+                <button
+                  key={type}
+                  onClick={() => switchType(type)}
+                  style={{
+                    display: 'flex', alignItems: 'center', gap: 6,
+                    padding: '5px 12px', border: 'none', borderRadius: 6, cursor: 'pointer',
+                    fontSize: 13, fontWeight: 500, transition: 'all .15s',
+                    background: reportType === type ? 'var(--red)'  : 'transparent',
+                    color:      reportType === type ? '#fff'        : 'var(--muted)',
+                  }}
+                >
+                  <Ic /> <span>{label}</span>
+                </button>
+              ))}
+            </nav>
+          </div>
+
           <div style={{ padding: 20, flex: 1 }}>
             <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '.06em' }}>
               {reportType === 'daily' ? 'Daily Metrics' : reportType === 'weekly' ? 'Weekly Report' : 'Visit Report'}
