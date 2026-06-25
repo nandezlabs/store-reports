@@ -41,10 +41,7 @@ const CONFIG = {
   },
 
   // API proxy endpoint — your Vercel function URL
-  // TODO: After deploying to Vercel, replace this with your actual Vercel URL:
-  // Production: 'https://create-reports.vercel.app/api/generate'
-  // For now, using relative path for local dev
-  apiEndpoint: 'https://create-reports.vercel.app/api/generate',
+  apiEndpoint: 'https://store-reports-nu.vercel.app/api/generate',
 
   // EmailJS credentials — from your .env file
   emailjs: {
