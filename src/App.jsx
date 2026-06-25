@@ -473,7 +473,7 @@ function Toast({ message, type = 'success', onDone }) {
   const { bg, icon } = colors[type] || colors.info
 
   return (
-    <div style={{
+    <div className="toast" style={{
       position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)',
       background: bg, color: '#fff', padding: '10px 18px',
       borderRadius: 8, display: 'flex', alignItems: 'center', gap: 8,
@@ -520,7 +520,7 @@ function GemRows({ rows, onChange }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
       {rows.map((row, i) => (
-        <div key={row.id} style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 70px 28px', gap: 6, alignItems: 'center' }}>
+        <div key={row.id} className="gem-row" style={{ display: 'grid', gridTemplateColumns: '1fr 80px 80px 70px 28px', gap: 6, alignItems: 'center' }}>
           {/* Metric selector */}
           <select value={row.metric} onChange={e => updateRow(row.id, 'metric', e.target.value)} style={selectStyle}>
             <option value="">Metric</option>
@@ -879,6 +879,7 @@ function OutputCard({ output, reportType, onApprove, onConfirmEdits, status }) {
             ref={textRef}
             value={editText}
             onChange={e => setEditText(e.target.value)}
+            className="output-textarea"
             style={{
               ...inputStyle, width: '100%', height: 260, resize: 'vertical',
               fontFamily: 'var(--font-mono)', fontSize: 12,
@@ -1081,12 +1082,18 @@ export default function App() {
         {/* ── Mobile tab bar ── */}
         <style>{`
           @media (max-width: 768px) {
-            .desktop-panel { display: none !important; }
-            .mobile-tabs   { display: flex !important; }
-            .nav-label     { display: none; }
+            .desktop-panel  { display: none !important; }
+            .mobile-tabs    { display: flex !important; }
+            .nav-label      { display: none; }
+            header          { padding: 0 12px !important; }
+            .panel-left     { width: 100% !important; min-width: 0 !important; border-right: none !important; padding-bottom: 64px; }
+            .panel-right    { padding-bottom: 64px; }
+            .gem-row        { grid-template-columns: 1fr 64px 64px 54px 26px !important; gap: 4px !important; }
+            .toast          { bottom: 76px !important; }
+            .output-textarea { height: 200px !important; }
           }
           @media (min-width: 769px) {
-            .mobile-tabs   { display: none !important; }
+            .mobile-tabs           { display: none !important; }
             .mobile-active-form    { display: flex !important; }
             .mobile-active-preview { display: flex !important; }
           }
@@ -1117,7 +1124,7 @@ export default function App() {
           borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column',
           overflowY: 'auto', flexShrink: 0,
         }}
-          className={mobileTab === 'form' ? 'mobile-active-form' : 'desktop-panel'}
+          className={`panel-left ${mobileTab === 'form' ? 'mobile-active-form' : 'desktop-panel'}`}
         >
           <div style={{ padding: 20, flex: 1 }}>
             <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '.06em' }}>
@@ -1145,7 +1152,7 @@ export default function App() {
         <div style={{
           flex: 1, overflowY: 'auto', padding: 24, display: 'flex', flexDirection: 'column', gap: 16,
         }}
-          className={mobileTab === 'preview' ? 'mobile-active-preview' : 'desktop-panel'}
+          className={`panel-right ${mobileTab === 'preview' ? 'mobile-active-preview' : 'desktop-panel'}`}
         >
           {status === 'idle' && (
             <div style={{ margin: 'auto', textAlign: 'center', color: 'var(--muted)' }}>
