@@ -1082,41 +1082,21 @@ export default function App() {
         {/* ── Mobile tab bar ── */}
         <style>{`
           @media (max-width: 768px) {
-            .desktop-panel  { display: none !important; }
-            .mobile-tabs    { display: flex !important; }
-            .nav-label      { display: none; }
-            header          { padding: 0 12px !important; }
-            .panel-left     { width: 100% !important; min-width: 0 !important; border-right: none !important; padding-bottom: 64px; }
-            .panel-right    { padding-bottom: 64px; }
-            .gem-row        { grid-template-columns: 1fr 64px 64px 54px 26px !important; gap: 4px !important; }
-            .toast          { bottom: 76px !important; }
+            .desktop-panel   { display: none !important; }
+            .nav-label       { display: none; }
+            header           { padding: 0 12px !important; }
+            .panel-left      { width: 100% !important; min-width: 0 !important; border-right: none !important; }
+            .gem-row         { grid-template-columns: 1fr 64px 64px 54px 26px !important; gap: 4px !important; }
             .output-textarea { height: 200px !important; }
+            .mobile-back-btn { display: flex !important; }
           }
           @media (min-width: 769px) {
-            .mobile-tabs           { display: none !important; }
             .mobile-active-form    { display: flex !important; }
             .mobile-active-preview { display: flex !important; }
           }
           @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
         `}</style>
 
-        {/* Mobile tabs */}
-        <div className="mobile-tabs" style={{
-          display: 'none', position: 'fixed', bottom: 0, left: 0, right: 0,
-          background: 'var(--surface)', borderTop: '1px solid var(--border)',
-          zIndex: 20, padding: '8px 16px', gap: 8,
-        }}>
-          {['form','preview'].map(tab => (
-            <button key={tab} onClick={() => setMobileTab(tab)} style={{
-              flex: 1, padding: '8px', border: 'none', borderRadius: 6, cursor: 'pointer',
-              fontSize: 13, fontWeight: 500,
-              background: mobileTab === tab ? 'var(--red)' : 'var(--bg)',
-              color:      mobileTab === tab ? '#fff'       : 'var(--muted)',
-            }}>
-              {tab === 'form' ? 'Form' : 'Preview'}
-            </button>
-          ))}
-        </div>
 
         {/* ── Left panel — Form ── */}
         <div style={{
@@ -1154,6 +1134,18 @@ export default function App() {
         }}
           className={`panel-right ${mobileTab === 'preview' ? 'mobile-active-preview' : 'desktop-panel'}`}
         >
+          <button
+            className="mobile-back-btn"
+            onClick={() => setMobileTab('form')}
+            style={{
+              display: 'none', alignItems: 'center', gap: 6,
+              padding: '4px 0', border: 'none', background: 'transparent',
+              color: 'var(--muted)', fontSize: 13, cursor: 'pointer',
+            }}
+          >
+            ← Back to Form
+          </button>
+
           {status === 'idle' && (
             <div style={{ margin: 'auto', textAlign: 'center', color: 'var(--muted)' }}>
               <div style={{ fontSize: 32, marginBottom: 12 }}>📋</div>
