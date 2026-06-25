@@ -1052,28 +1052,6 @@ export default function App() {
           <span style={{ fontSize: 12, color: 'var(--muted)', marginLeft: 2 }}>#{CONFIG.storeNumber}</span>
         </div>
 
-        {/* Report type switcher */}
-        <nav style={{ display: 'flex', gap: 4, marginLeft: 'auto' }}>
-          {[
-            { type: 'daily',  label: 'Daily',  Icon: Icon.Daily  },
-            { type: 'weekly', label: 'Weekly', Icon: Icon.Weekly },
-            { type: 'visit',  label: 'Visit',  Icon: Icon.Visit  },
-          ].map(({ type, label, Icon: Ic }) => (
-            <button
-              key={type}
-              onClick={() => switchType(type)}
-              style={{
-                display: 'flex', alignItems: 'center', gap: 6,
-                padding: '5px 12px', border: 'none', borderRadius: 6, cursor: 'pointer',
-                fontSize: 13, fontWeight: 500, transition: 'all .15s',
-                background: reportType === type ? 'var(--red)'  : 'transparent',
-                color:      reportType === type ? '#fff'        : 'var(--muted)',
-              }}
-            >
-              <Ic /> <span className="nav-label">{label}</span>
-            </button>
-          ))}
-        </nav>
       </header>
 
       {/* ── Body ── */}
@@ -1083,7 +1061,6 @@ export default function App() {
         <style>{`
           @media (max-width: 768px) {
             .desktop-panel   { display: none !important; }
-            .nav-label       { display: none; }
             header           { padding: 0 12px !important; }
             .panel-left      { width: 100% !important; min-width: 0 !important; border-right: none !important; }
             .gem-row         { grid-template-columns: 1fr 64px 64px 54px 26px !important; gap: 4px !important; }
@@ -1107,9 +1084,29 @@ export default function App() {
           className={`panel-left ${mobileTab === 'form' ? 'mobile-active-form' : 'desktop-panel'}`}
         >
           <div style={{ padding: 20, flex: 1 }}>
-            <h2 style={{ fontSize: 13, fontWeight: 600, color: 'var(--muted)', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '.06em' }}>
-              {reportType === 'daily' ? 'Daily Metrics' : reportType === 'weekly' ? 'Weekly Report' : 'Visit Report'}
-            </h2>
+            {/* Report type selector */}
+            <div style={{ display: 'flex', background: 'var(--bg)', borderRadius: 'var(--radius)', padding: 4, marginBottom: 20 }}>
+              {[
+                { type: 'daily',  label: 'Daily',  Icon: Icon.Daily  },
+                { type: 'weekly', label: 'Weekly', Icon: Icon.Weekly },
+                { type: 'visit',  label: 'Visit',  Icon: Icon.Visit  },
+              ].map(({ type, label, Icon: Ic }) => (
+                <button
+                  key={type}
+                  onClick={() => switchType(type)}
+                  style={{
+                    flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                    padding: '7px 12px', border: 'none', borderRadius: 6, cursor: 'pointer',
+                    fontSize: 13, fontWeight: 500, transition: 'all .15s',
+                    background: reportType === type ? 'var(--surface)' : 'transparent',
+                    color:      reportType === type ? 'var(--text)'    : 'var(--muted)',
+                    boxShadow:  reportType === type ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                  }}
+                >
+                  <Ic /> {label}
+                </button>
+              ))}
+            </div>
 
             {reportType === 'daily'  && <DailyForm  form={dailyForm}  onChange={setDailyForm}  />}
             {reportType === 'weekly' && <WeeklyForm form={weeklyForm} onChange={setWeeklyForm} />}
