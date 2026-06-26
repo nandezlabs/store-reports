@@ -236,38 +236,35 @@ const Icon = {
 //  Edit these to adjust the tone or structure of generated reports.
 // ============================================================
 
-function buildDailyPrompt(form) {
-  const system = `You are a report writer for ${CONFIG.managerName}, Store Manager at store #${CONFIG.storeNumber}.
-Write in first person, direct, accountable tone. Use "I" statements and "I will..." for action items.
-Keep action plans to 2 bullet points max per metric. Only include metrics where a value is provided.
-Do NOT add section headers, an intro, a summary, or a sign-off. Do not use filler phrases.`
+// Daily report is pure formatting — built locally, no AI/API call needed.
+// Output:
+//   [Weekday] #1775
+//
+//   YOY/SSS%: 2.3%
+//   SST%: 1.5%
+//   Check Avg: $8.50
+//   TOF: 95% ✅ (target 90%, var +5%)
+//   AOO: 85% ⚠️ (target 90%, var -5%)
+function formatDailyReport(form) {
+  const lines = [`${DAYS[form.date.getDay()]} #${CONFIG.storeNumber}`, '']
 
-  const gemRows = form.gemRows.filter(r => r.metric && r.actual !== '')
-    .map(r => `- ${r.metric}: ${r.actual}% (target ${r.target}%, var ${r.variance >= 0 ? '+' : ''}${r.variance}%)`)
-    .join('\n')
+  if (form.sss !== '')      lines.push(`YOY/SSS%: ${form.sss}%`)
+  if (form.sst !== '')      lines.push(`SST%: ${form.sst}%`)
+  if (form.checkAvg !== '') lines.push(`Check Avg: $${form.checkAvg}`)
 
-  const metrics = [
-    form.sss !== ''      && `- YOY/SSS%: ${form.sss}%`,
-    form.sst !== ''      && `- SST%: ${form.sst}%`,
-    form.checkAvg !== '' && `- Check Avg: $${form.checkAvg}`,
-    gemRows,
-  ].filter(Boolean).join('\n')
+  form.gemRows
+    .filter(r => r.metric && r.actual !== '')
+    .forEach(r => {
+      if (r.target !== '') {
+        const mark = r.variance >= 0 ? '✅' : '⚠️'
+        const sign = r.variance >= 0 ? '+' : ''
+        lines.push(`${r.metric}: ${r.actual}% ${mark} (target ${r.target}%, var ${sign}${r.variance}%)`)
+      } else {
+        lines.push(`${r.metric}: ${r.actual}%`)
+      }
+    })
 
-  const user = `Generate a short daily metrics message.
-
-METRICS:
-${metrics || 'None provided'}
-
-${form.notes ? `ADDITIONAL NOTES:\n${form.notes}` : ''}
-
-Format rules — follow exactly:
-- The first line must be exactly: ${DAYS[form.date.getDay()]} #${CONFIG.storeNumber}
-- Then list each provided metric on its own line with its value, plus a brief action only if it is off-target.
-- No section headers (no "Guest Experience" header). Do not invent metrics that were not provided.
-- No opening greeting, no closing summary, and no sign-off or name at the end.
-Output a clean WhatsApp-style message and nothing else.`
-
-  return { system, user }
+  return lines.join('\n')
 }
 
 function buildWeeklyPrompt(form) {
@@ -956,8 +953,13 @@ export default function App() {
     setOutput('')
     setMobileTab('preview')
     try {
+      // Daily is pure formatting — build it locally, no API call.
+      if (reportType === 'daily') {
+        setOutput(formatDailyReport(dailyForm))
+        setStatus('ready')
+        return
+      }
       let system, user
-      if (reportType === 'daily')  ({ system, user } = buildDailyPrompt(dailyForm))
       if (reportType === 'weekly') ({ system, user } = buildWeeklyPrompt(weeklyForm))
       if (reportType === 'visit')  ({ system, user } = buildVisitPrompt(visitForm))
       const text = await callClaude(system, user, 1200)
@@ -971,6 +973,12 @@ export default function App() {
 
   // ── Confirm edits (grammar check) ───────────────────────────
   async function handleConfirmEdits(editedText) {
+    // Daily is plain metrics — keep edits exactly, no AI grammar pass.
+    if (reportType === 'daily') {
+      setOutput(editedText)
+      showToast('Edits confirmed')
+      return
+    }
     showToast('Checking grammar…', 'info')
     try {
       const { system, user } = buildGrammarPrompt(editedText)
