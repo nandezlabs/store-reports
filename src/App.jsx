@@ -237,31 +237,35 @@ const Icon = {
 // ============================================================
 
 function buildDailyPrompt(form) {
-  const system = `You are a report writer for ${CONFIG.managerName}, Store Manager at Panda Express #${CONFIG.storeNumber}. 
+  const system = `You are a report writer for ${CONFIG.managerName}, Store Manager at store #${CONFIG.storeNumber}.
 Write in first person, direct, accountable tone. Use "I" statements and "I will..." for action items.
-Keep action plans to 2 bullet points max per metric. Only include sections where numbers are provided.
-Do not include section headers for metrics with no data. Do not use filler phrases.`
+Keep action plans to 2 bullet points max per metric. Only include metrics where a value is provided.
+Do NOT add section headers, an intro, a summary, or a sign-off. Do not use filler phrases.`
 
   const gemRows = form.gemRows.filter(r => r.metric && r.actual !== '')
     .map(r => `- ${r.metric}: ${r.actual}% (target ${r.target}%, var ${r.variance >= 0 ? '+' : ''}${r.variance}%)`)
     .join('\n')
 
-  const user = `Generate a daily metrics message for ${formatDate(form.date)}.
+  const metrics = [
+    form.sss !== ''      && `- YOY/SSS%: ${form.sss}%`,
+    form.sst !== ''      && `- SST%: ${form.sst}%`,
+    form.checkAvg !== '' && `- Check Avg: $${form.checkAvg}`,
+    gemRows,
+  ].filter(Boolean).join('\n')
+
+  const user = `Generate a short daily metrics message.
 
 METRICS:
-- Net Sales: $${form.netSales}
-- YOY/SSS%: ${form.sss}%
-- SST%: ${form.sst}%
-- Check Avg: $${form.checkAvg}
-
-GUEST EXPERIENCE METRICS:
-${gemRows || 'None provided'}
+${metrics || 'None provided'}
 
 ${form.notes ? `ADDITIONAL NOTES:\n${form.notes}` : ''}
 
-Output a short, clear WhatsApp-style message (no subject line, no formal greeting). 
-Start with the date and store number. List each metric with its value and a brief action if off-target.
-End with your name: ${CONFIG.managerName}.`
+Format rules — follow exactly:
+- The first line must be exactly: ${DAYS[form.date.getDay()]} #${CONFIG.storeNumber}
+- Then list each provided metric on its own line with its value, plus a brief action only if it is off-target.
+- No section headers (no "Guest Experience" header). Do not invent metrics that were not provided.
+- No opening greeting, no closing summary, and no sign-off or name at the end.
+Output a clean WhatsApp-style message and nothing else.`
 
   return { system, user }
 }
@@ -418,7 +422,7 @@ function defaultGemRows() {
 function defaultDailyForm() {
   return {
     date:     yesterday(),
-    netSales: '', sss: '', sst: '', checkAvg: '',
+    sss: '', sst: '', checkAvg: '',
     gemRows:  defaultGemRows(),
     notes:    '',
   }
@@ -588,9 +592,6 @@ function DailyForm({ form, onChange }) {
       {/* Sales */}
       <FormSection title="Sales">
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-          <FormGroup label="Net Sales ($)">
-            <input type="number" placeholder="0.00" value={form.netSales} onChange={e => set('netSales', e.target.value)} style={inputStyle} />
-          </FormGroup>
           <FormGroup label="YOY / SSS%">
             <input type="number" placeholder="0.0" value={form.sss} onChange={e => set('sss', e.target.value)} style={inputStyle} />
           </FormGroup>
