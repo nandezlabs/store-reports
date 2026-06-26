@@ -11,7 +11,33 @@
 //           Set ANTHROPIC_API_KEY in Vercel → Project Settings → Env Variables
 // ============================================================
 
+// Origins allowed to call this proxy. The GitHub Pages site is the real
+// frontend; localhost entries cover `npm run dev` / `npm run preview`.
+const ALLOWED_ORIGINS = [
+  "https://nandezlabs.github.io",
+  "http://localhost:5173",
+  "http://localhost:4173",
+];
+
+function applyCors(req, res) {
+  const origin = req.headers.origin;
+  if (ALLOWED_ORIGINS.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Vary", "Origin");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Max-Age", "86400");
+}
+
 export default async function handler(req, res) {
+  applyCors(req, res);
+
+  // Answer the browser's CORS preflight before anything else
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+
   // Only allow POST requests
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
